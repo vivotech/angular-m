@@ -157,30 +157,25 @@ function HTTPService($rootScope, $http, $q) {
   var offlineError = {online: false};
 
   function callHTTP(config, success, fail) {
-    var deferred = $q.defer(),
-        isOnline = m_isBoolean(navigator.onLine) ? navigator.onLine : true;
+    var deferred = $q.defer();
 
     config = config || {};
     config.method = config.method || METHODS.read;
 
-    if (isOnline === false) {
-      fail(offlineError);
-      deferred.reject(offlineError);
-    } else {
-      $http(config)
-        .success(function (data) {
-          if (m_isFunction(success)) {
-            success(data);
-          }
-          deferred.resolve(data);
-        })
-        .error(function (data) {
-          if (m_isFunction(fail)) {
-            fail(data);
-          }
-          deferred.reject(data);
-        });
-    }
+    $http(config)
+      .success(function (data) {
+        if (m_isFunction(success)) {
+          success(data);
+        }
+        deferred.resolve(data);
+      })
+      .error(function (data) {
+        if (m_isFunction(fail)) {
+          fail(data);
+        }
+        deferred.reject(data);
+      });
+
     return deferred;
   }
 
@@ -216,7 +211,7 @@ function HTTPService($rootScope, $http, $q) {
 
   return {
     METHODS: METHODS,
-    
+
     call: callHTTP,
 
     read: callRead,
@@ -224,7 +219,7 @@ function HTTPService($rootScope, $http, $q) {
     change: callChange,
     create: callCreate,
     delete: callDelete,
-    
+
     readList: callRead,
     updateList: callUpdate,
     changeList: callChange,
